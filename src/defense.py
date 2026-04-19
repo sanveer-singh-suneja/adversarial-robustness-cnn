@@ -53,7 +53,7 @@ def get_loaders():
 
 # ── FGSM (inline for training) ────────────────────────────────────────────────
 def fgsm(image, epsilon, gradient):
-    return torch.clamp(image + epsilon * gradient.sign(), 0, 1)
+    return image + epsilon * gradient.sign()
 
 
 # ── Model ─────────────────────────────────────────────────────────────────────
@@ -107,13 +107,19 @@ def evaluate(model, loader, epsilon, criterion):
 
     for images, labels in loader:
         images, labels = images.to(DEVICE), labels.to(DEVICE)
-        images.requires_grad = True
 
+        if epsilon == 0:
+            with torch.no_grad():
+                pred = model(images).argmax(1)
+            correct += pred.eq(labels).sum().item()
+            total   += labels.size(0)
+            continue
+
+        images.requires_grad = True
         out  = model(images)
         loss = criterion(out, labels)
         model.zero_grad()
         loss.backward()
-
         perturbed = fgsm(images, epsilon, images.grad.data)
 
         with torch.no_grad():
@@ -151,6 +157,8 @@ def main():
     # ── Standard model (no defense) ──
     print("\nEvaluating standard pretrained model ...")
     std_model = build_model()
+    std_model.load_state_dict(
+        torch.load("./results/models/cifar10_resnet18.pth", map_location=DEVICE, weights_only=True))
     std_accs  = []
     for eps in EVAL_EPSILONS:
         acc = evaluate(std_model, test_loader, eps, criterion)
