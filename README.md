@@ -19,18 +19,15 @@ This is directly motivated by **Trustworthy AI** research — building vision sy
 
 ## Results
 
-| Epsilon (ε) | Standard Model |
-|:-----------:|:--------------:|
-| 0.00        | 89.22%         |
-| 0.01        | 39.99%         |
-| 0.05        | 6.62%          |
-| 0.10        | 4.94%          |
-| 0.15        | 6.64%          |
-| 0.20        | 9.01%          |
-| 0.25        | 10.16%         |
-| 0.30        | 10.29%         |
+| Epsilon (ε) | Standard Model | Adversarially Trained |
+|:-----------:|:--------------:|:---------------------:|
+| 0.00        | 89.22%         | 92.97%                |
+| 0.05        | 6.62%          | 87.01%                |
+| 0.10        | 4.94%          | 78.39%                |
+| 0.15        | 6.64%          | 78.75%                |
+| 0.20        | 9.01%          | 74.44%                |
 
-**Key finding:** A ResNet18 achieving 89.22% clean accuracy drops to under 7% under FGSM attack at ε=0.05 — a perturbation completely invisible to the human eye. This demonstrates the fundamental fragility of standard deep learning models, motivating research in adversarial defense. The slight accuracy recovery at higher epsilon values (ε=0.15+) is a known phenomenon where large perturbations accidentally push inputs toward certain class distributions.
+**Key finding:** The standard model collapses from 89.22% to under 7% accuracy under an FGSM attack at ε=0.05 — a perturbation completely invisible to the human eye. Adversarial training not only recovers this robustness (87.01% at ε=0.05) but also improves clean accuracy to 92.97%, demonstrating that training on adversarial examples forces the model to learn more generalised, robust features rather than brittle texture shortcuts.
 
 ---
 
